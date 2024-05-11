@@ -4,6 +4,8 @@ The Agreement Eligibility is a [Hats Protocol](https://github.com/Hats-Protocol/
 
 When an individual signs the agreement, they also receive a hat that grants them access to the community. If a new agreement is published, community members must sign the new agreement to continue to wear the hat and remain a member of the community.
 
+## Functionality and Usage
+
 ### Deployment and Initialization
 
 The module is deployed and initialized by the organization. As a Hats Protocol module, it can be deployed via the [Hats Module Factory](https://github.com/Hats-Protocol/hats-module#hatsmodulefactory). When the contract is deployed, the organization must specify the following parameters:
