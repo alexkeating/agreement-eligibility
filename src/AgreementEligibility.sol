@@ -13,6 +13,8 @@ import { MultiClaimsHatter } from "multi-claims-hatter/MultiClaimsHatter.sol";
 error AgreementEligibility_NotOwner();
 /// @dev Thrown when the caller does not wear the `ARBITRATOR_HAT`
 error AgreementEligibility_NotArbitrator();
+/// @dev Thrown when the hat is not mutable
+error AgreementEligibility_HatNotMutable();
 
 /**
  * @title AgreementEligibility
@@ -30,6 +32,10 @@ contract AgreementEligibility is HatsEligibilityModule {
   event AgreementEligibility_AgreementSigned(address signer, string agreement);
   /// @dev Emitted when a new `agreement` is set
   event AgreementEligibility_AgreementSet(string agreement, uint256 grace);
+  /// @dev Emitted when the `ownerHat` is set
+  event AgreementEligibility_OwnerHatSet(uint256 newOwnerHat);
+  /// @dev Emitted when the `arbitratorHat` is set
+  event AgreementEligibility_ArbitratorHatSet(uint256 newArbitratorHat);
 
   /*//////////////////////////////////////////////////////////////
                               CONSTANTS
@@ -53,24 +59,18 @@ contract AgreementEligibility is HatsEligibilityModule {
    * 0       | IMPLEMENTATION      | address   | 20     | HatsModule         |
    * 20      | HATS                | address   | 20     | HatsModule         |
    * 40      | hatId               | uint256   | 32     | HatsModule         |
-   * 72      | OWNER_HAT           | uint256   | 32     | this               |
-   * 104     | ARBITRATOR_HAT      | uint256   | 32     | this               |
    * ------------------------------------------------------------------------+
    */
-
-  /// @notice The id of the hat whose wearer serves as the owner of this contract
-  function OWNER_HAT() public pure returns (uint256) {
-    return _getArgUint256(72);
-  }
-
-  /// @notice The id of the hat whose wearer serves as the arbitrator for this contract
-  function ARBITRATOR_HAT() public pure returns (uint256) {
-    return _getArgUint256(104);
-  }
 
   /*//////////////////////////////////////////////////////////////
                             MUTABLE STATE
   //////////////////////////////////////////////////////////////*/
+
+  /// @notice The hat ID for the owner hat
+  uint256 public ownerHat;
+
+  /// @notice The hat ID for the arbitrator hat
+  uint256 public arbitratorHat;
 
   /// @dev The current agreement, typically as a CID of the agreement plaintext
   string public currentAgreement;
@@ -106,7 +106,12 @@ contract AgreementEligibility is HatsEligibilityModule {
   /// @inheritdoc HatsModule
   function _setUp(bytes calldata _initData) internal override {
     // decode init data
-    (string memory agreement) = abi.decode(_initData, (string));
+    (uint256 _ownerHat, uint256 _arbitratorHat, string memory agreement) =
+      abi.decode(_initData, (uint256, uint256, string));
+
+    // set the owner and arbitrator hats
+    _setOwnerHat(_ownerHat);
+    _setArbitratorHat(_arbitratorHat);
 
     // set the initial agreement
     currentAgreement = agreement;
@@ -236,6 +241,24 @@ contract AgreementEligibility is HatsEligibilityModule {
     /// @dev Hats.sol will emit a Hats.WearerStandingChanged event
   }
 
+  /**
+   * @notice Set a new owner hat
+   * @dev Only callable by a wearer of the current ownerHat, and only if the target hat is mutable
+   * @param _newOwnerHat The new owner hat
+   */
+  function setOwnerHat(uint256 _newOwnerHat) public onlyOwner hatIsMutable {
+    _setOwnerHat(_newOwnerHat);
+  }
+
+  /**
+   * @notice Set a new arbitrator hat
+   * @dev Only callable by a wearer of the current arbitratorHat, and only if the target hat is mutable
+   * @param _newArbitratorHat The new arbitrator hat
+   */
+  function setArbitratorHat(uint256 _newArbitratorHat) public onlyOwner hatIsMutable {
+    _setArbitratorHat(_newArbitratorHat);
+  }
+
   /*//////////////////////////////////////////////////////////////
                           VIEW FUNCTIONS
   //////////////////////////////////////////////////////////////*/
@@ -249,18 +272,42 @@ contract AgreementEligibility is HatsEligibilityModule {
   }
 
   /*//////////////////////////////////////////////////////////////
+                          INTERNAL FUNCTIONS
+  //////////////////////////////////////////////////////////////*/
+
+  /// @dev Set a new owner hat
+  function _setOwnerHat(uint256 _newOwnerHat) internal {
+    ownerHat = _newOwnerHat;
+
+    emit AgreementEligibility_OwnerHatSet(_newOwnerHat);
+  }
+
+  function _setArbitratorHat(uint256 _newArbitratorHat) internal {
+    arbitratorHat = _newArbitratorHat;
+
+    emit AgreementEligibility_ArbitratorHatSet(_newArbitratorHat);
+  }
+
+  /*//////////////////////////////////////////////////////////////
                             MODIFERS
   //////////////////////////////////////////////////////////////*/
 
   /// @notice Reverts if the caller is not wearing the OWNER_HAT.
   modifier onlyOwner() {
-    if (!HATS().isWearerOfHat(msg.sender, OWNER_HAT())) revert AgreementEligibility_NotOwner();
+    if (!HATS().isWearerOfHat(msg.sender, ownerHat)) revert AgreementEligibility_NotOwner();
     _;
   }
 
   /// @notice Reverts if the caller is not wearing the ARBITRATOR_HAT.
   modifier onlyArbitrator() {
-    if (!HATS().isWearerOfHat(msg.sender, ARBITRATOR_HAT())) revert AgreementEligibility_NotArbitrator();
+    if (!HATS().isWearerOfHat(msg.sender, arbitratorHat)) revert AgreementEligibility_NotArbitrator();
+    _;
+  }
+
+  /// @notice Reverts if the hatid is not mutable
+  modifier hatIsMutable() {
+    (,,,,,,, bool isMutable,) = HATS().viewHat(hatId());
+    if (!isMutable) revert AgreementEligibility_HatNotMutable();
     _;
   }
 }

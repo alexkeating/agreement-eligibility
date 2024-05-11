@@ -11,11 +11,11 @@ The module is deployed and initialized by the organization. As a Hats Protocol m
 Immutable parameters:
 
 - `hatId` — The hat id for the community hat
-- `OWNER_HAT` — The hat id for the owner hat, i.e., the hat whose wearer is authorized to publish new agreements
-- `ARBITRATOR_HAT` — The hat id for the arbitrator hat, i.e. the hat whose wearer is authorized to revoke the community hat from a given community member
 
 Mutable parameters:
 
+- `ownerHat` — The hat id for the owner hat, i.e., the hat whose wearer is authorized to publish new agreements
+- `arbitratorHat` — The hat id for the arbitrator hat, i.e. the hat whose wearer is authorized to revoke the community hat from a given community member
 - `agreement` — The initial agreement, in the form of a hash. This is typically a CID pointing to a file containing the plaintext of the agreement.
 
 ### Signing the Agreement and Claiming the Community Hat (Anyone)
