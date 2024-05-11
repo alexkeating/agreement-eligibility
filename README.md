@@ -23,6 +23,7 @@ Mutable parameters:
 ### Signing the Agreement and Claiming the Community Hat (Anyone)
 
 Anyone can make themselves eligible for the hat by signing the agreement. There are two options of doing so:
+
 1. Signing the agreement and claiming the hat, in one transaction. Doing so involves calling the `signAgreementAndClaimHat` function. The function receives as an input a [Multi Claims Hatter](https://github.com/Hats-Protocol/multi-claims-hatter) instance, which will be used for claiming the hat.
 
 2. Only signing the agreement, using the `signAgreement` function.
