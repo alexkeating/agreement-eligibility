@@ -9,9 +9,9 @@ import { MultiClaimsHatter } from "multi-claims-hatter/MultiClaimsHatter.sol";
                             CUSTOM ERRORS
 //////////////////////////////////////////////////////////////*/
 
-/// @dev Thrown when the caller does not wear the `OWNER_HAT`
+/// @dev Thrown when the caller does not wear the `ownerHat`
 error AgreementEligibility_NotOwner();
-/// @dev Thrown when the caller does not wear the `ARBITRATOR_HAT`
+/// @dev Thrown when the caller does not wear the `arbitratorHat`
 error AgreementEligibility_NotArbitrator();
 /// @dev Thrown when the hat is not mutable
 error AgreementEligibility_HatNotMutable();
@@ -195,7 +195,7 @@ contract AgreementEligibility is HatsEligibilityModule {
 
   /**
    * @notice Set a new agreement, with a grace period
-   * @dev Only callable by a wearer of the `OWNER_HAT`
+   * @dev Only callable by a wearer of the `ownerHat`
    * @param _agreement The new agreement, as a hash of the agreement plaintext (likely a CID)
    * @param _grace The new grace period
    */
@@ -211,7 +211,7 @@ contract AgreementEligibility is HatsEligibilityModule {
 
   /**
    * @notice Revoke the `_wearer`'s hat and place them in bad standing
-   * @dev Only callable by a wearer of the `ARBITRATOR_HAT`
+   * @dev Only callable by a wearer of the `arbitratorHat`
    * @param _wearer The address of the wearer from whom to revoke the hat
    */
   function revoke(address _wearer) public onlyArbitrator {
@@ -230,7 +230,7 @@ contract AgreementEligibility is HatsEligibilityModule {
 
   /**
    * @notice Forgive the `_wearer`'s bad standing, allowing them to claim the hat again
-   * @dev Only callable by a wearer of the `ARBITRATOR_HAT`
+   * @dev Only callable by a wearer of the `arbitratorHat`
    * @param _wearer The address of the wearer to forgive
    */
   function forgive(address _wearer) public onlyArbitrator {
@@ -252,7 +252,7 @@ contract AgreementEligibility is HatsEligibilityModule {
 
   /**
    * @notice Set a new arbitrator hat
-   * @dev Only callable by a wearer of the current arbitratorHat, and only if the target hat is mutable
+   * @dev Only callable by a wearer of the current ownerHat, and only if the target hat is mutable
    * @param _newArbitratorHat The new arbitrator hat
    */
   function setArbitratorHat(uint256 _newArbitratorHat) public onlyOwner hatIsMutable {
@@ -292,13 +292,13 @@ contract AgreementEligibility is HatsEligibilityModule {
                             MODIFERS
   //////////////////////////////////////////////////////////////*/
 
-  /// @notice Reverts if the caller is not wearing the OWNER_HAT.
+  /// @notice Reverts if the caller is not wearing the ownerHat.
   modifier onlyOwner() {
     if (!HATS().isWearerOfHat(msg.sender, ownerHat)) revert AgreementEligibility_NotOwner();
     _;
   }
 
-  /// @notice Reverts if the caller is not wearing the ARBITRATOR_HAT.
+  /// @notice Reverts if the caller is not wearing the arbitratorHat.
   modifier onlyArbitrator() {
     if (!HATS().isWearerOfHat(msg.sender, arbitratorHat)) revert AgreementEligibility_NotArbitrator();
     _;

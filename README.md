@@ -38,19 +38,19 @@ Active community members can sign the new agreement by calling the `signAgreemen
 
 ### Publishing a New Agreement (Owner Only)
 
-The wearer of the `OWNER_HAT` can publish a new agreement by calling the `setAgreement()` function. Just like intialization, this involves passing both the `agreement` and `grace` parameters. This action also increments the `currentAgreementId`.
+The wearer of the `ownerHat` can publish a new agreement by calling the `setAgreement()` function. Just like initialization, this involves passing both the `agreement` and `grace` parameters. This action also increments the `currentAgreementId`.
 
 Once a new agreement is set, the grace period begins.
 
 ### Revoking a Community Member's Hat (Arbitrator Only)
 
-The wearer of the `ARBITRATOR_HAT` can revoke a community member's hat by calling the `revoke()` function. This function takes a single parameter, `wearer`, which is the address of the community member whose hat is being revoked.
+The wearer of the `arbitratorHat` can revoke a community member's hat by calling the `revoke()` function. This function takes a single parameter, `wearer`, which is the address of the community member whose hat is being revoked.
 
 When a hat is revoked, the hat is burned and the member is placed in badStanding within Hats Protocol. This means that the member is no longer eligible to wear the community hat and cannot re-claim the community hat until the arbitrator places them back in good standing.
 
 ### Forgiving a Community Member (Arbitrator Only)
 
-If an individual's community hat has been revoked, then they are in bad standing. If the wearer of the `ARBITRATOR_HAT` believes that the individual has made up for the behavior that led to the revocation, they can call the `forgive()` function. This places the individual back in good standing, enabling them to claim the community hat again if they so choose.
+If an individual's community hat has been revoked, then they are in bad standing. If the wearer of the `arbitratorHat` believes that the individual has made up for the behavior that led to the revocation, they can call the `forgive()` function. This places the individual back in good standing, enabling them to claim the community hat again if they so choose.
 
 ### Hat Eligibility
 
