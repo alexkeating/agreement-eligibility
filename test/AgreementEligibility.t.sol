@@ -7,7 +7,8 @@ import { Test, console2 } from "forge-std/Test.sol";
 import {
   AgreementEligibility,
   AgreementEligibility_NotOwner,
-  AgreementEligibility_NotArbitrator
+  AgreementEligibility_NotArbitrator,
+  AgreementEligibility_HatNotMutable
 } from "../src/AgreementEligibility.sol";
 import { Deploy } from "../script/AgreementEligibility.s.sol";
 import {
@@ -33,6 +34,8 @@ contract AgreementEligibilityTest is Deploy, Test {
   event AgreementEligibility_HatClaimedWithAgreement(address claimer, uint256 hatId, string agreement);
   event AgreementEligibility_AgreementSigned(address signer, string agreement);
   event AgreementEligibility_AgreementSet(string agreement, uint256 grace);
+  event AgreementEligibility_OwnerHatSet(uint256 newOwnerHat);
+  event AgreementEligibility_ArbitratorHatSet(uint256 newArbitratorHat);
 
   function setUp() public virtual {
     // create and activate a fork, at BLOCK_NUMBER
@@ -82,9 +85,9 @@ contract WithInstanceTest is AgreementEligibilityTest {
     string memory _agreement
   ) public returns (AgreementEligibility) {
     // encode the other immutable args as packed bytes
-    otherImmutableArgs = abi.encodePacked(_ownerHat, _arbitratorHat);
+    otherImmutableArgs = abi.encodePacked();
     // encoded the initData as unpacked bytes
-    initData = abi.encode(_agreement);
+    initData = abi.encode(_ownerHat, _arbitratorHat, _agreement);
     // deploy the instance
     return AgreementEligibility(
       deployModuleInstance(factory, address(implementation), _claimableHat, otherImmutableArgs, initData)
@@ -159,11 +162,11 @@ contract Deployment is WithInstanceTest {
   }
 
   function test_ownerHat() public {
-    assertEq(instance.OWNER_HAT(), tophat);
+    assertEq(instance.ownerHat(), tophat);
   }
 
   function test_arbitratorHat() public {
-    assertEq(instance.ARBITRATOR_HAT(), arbitratorHat);
+    assertEq(instance.arbitratorHat(), arbitratorHat);
   }
 
   function test_agreement() public {
@@ -571,5 +574,67 @@ contract WearerStatus is WithInstanceTest {
   modifier goodStanding() {
     _;
     assertTrue(standing);
+  }
+}
+
+contract SetOwnerHat is WithInstanceTest {
+  function test_owner_mutable() public {
+    uint256 newOwnerHat = 1;
+    vm.expectEmit();
+    emit AgreementEligibility_OwnerHatSet(newOwnerHat);
+
+    vm.prank(dao);
+    instance.setOwnerHat(newOwnerHat);
+  }
+
+  function test_revert_nonOwner_mutable() public {
+    uint256 newOwnerHat = 1;
+    vm.expectRevert(AgreementEligibility_NotOwner.selector);
+
+    vm.prank(nonWearer);
+    instance.setOwnerHat(newOwnerHat);
+  }
+
+  function test_revert_owner_immutable() public {
+    uint256 newOwnerHat = 1;
+
+    vm.prank(dao);
+    HATS.makeHatImmutable(claimableHat);
+
+    vm.expectRevert(AgreementEligibility_HatNotMutable.selector);
+
+    vm.prank(dao);
+    instance.setOwnerHat(newOwnerHat);
+  }
+}
+
+contract SetArbitratorHat is WithInstanceTest {
+  function test_arbitrator_mutable() public {
+    uint256 newArbitratorHat = 1;
+    vm.expectEmit();
+    emit AgreementEligibility_ArbitratorHatSet(newArbitratorHat);
+
+    vm.prank(dao);
+    instance.setArbitratorHat(newArbitratorHat);
+  }
+
+  function test_revert_nonOwner_mutable() public {
+    uint256 newArbitratorHat = 1;
+    vm.expectRevert(AgreementEligibility_NotOwner.selector);
+
+    vm.prank(nonWearer);
+    instance.setArbitratorHat(newArbitratorHat);
+  }
+
+  function test_revert_arbitrator_immutable() public {
+    uint256 newArbitratorHat = 1;
+
+    vm.prank(dao);
+    HATS.makeHatImmutable(claimableHat);
+
+    vm.expectRevert(AgreementEligibility_HatNotMutable.selector);
+
+    vm.prank(dao);
+    instance.setArbitratorHat(newArbitratorHat);
   }
 }
