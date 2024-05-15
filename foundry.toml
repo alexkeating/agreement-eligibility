@@ -12,7 +12,7 @@ remappings = [
   "ds-test/=lib/forge-std/lib/ds-test/src/",
   "forge-std/=lib/forge-std/src/",
   "hats-module/=lib/hats-module/src/",
-  "multi-claims-hatter/=lib/multi-claims-hatter/src/"
+  "multi-claims-hatter/=lib/multi-claims-hatter/src/",
 ]
 # Enable tests to read ir-optimized bytecode precompiled by profile.optimized
 fs_permissions = [{ access = "read", path = "./optimized-out" }]
@@ -53,6 +53,7 @@ wrap_comments = true
 
 [rpc_endpoints]
 arbitrum = "https://arbitrum-mainnet.infura.io/v3/${INFURA_KEY}"
+celo = "${CELO_RPC}"
 gnosis = "${GC_RPC}"
 goerli = "https://goerli.infura.io/v3/${INFURA_KEY}"
 local = "http://localhost:8545"
@@ -63,6 +64,7 @@ sepolia = "https://sepolia.infura.io/v3/${INFURA_KEY}"
 
 [etherscan]
 arbitrum = { key = "${ARBISCAN_KEY}", url = "https://api.arbiscan.io/api" }
+celo = { key = "${CELOSCAN_KEY}", url = "https://api.celoscan.io/api" }
 goerli = { key = "${ETHERSCAN_KEY}", url = "https://api-goerli.etherscan.io/api" }
 gnosis = { key = "${GNOSISSCAN_KEY}", url = "https://api.gnosisscan.io/api" }
 mainnet = { key = "${ETHERSCAN_KEY}", url = "https://api.etherscan.io/api" }

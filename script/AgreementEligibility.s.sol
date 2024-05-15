@@ -10,7 +10,7 @@ contract Deploy is Script {
 
   // default values
   bool private verbose = true;
-  string private version = "0.1.0"; // increment with each deployment
+  string private version = "0.2.0"; // increment with each deployment
 
   /// @notice Override default values, if desired
   function prepare(bool _verbose, string memory _version) public {
@@ -33,10 +33,10 @@ contract Deploy is Script {
   }
 }
 
-// forge script script/AgreementClaimsHatter.s.sol -f ethereum --broadcast --verify
+// forge script script/AgreementEligibility.s.sol -f ethereum --broadcast --verify
 
 /* 
-forge verify-contract --chain-id 5 --num-of-optimizations 1000000 --watch --constructor-args $(cast abi-encode \
-"constructor(string)" "0.0.1" ) --compiler-version v0.8.19 0xE43C43d93B22EB3CB0aEB05746094c0925FDC262 \
-src/AgreementClaimsHatter.sol:AgreementClaimsHatter --etherscan-api-key $ETHERSCAN_KEY 
+forge verify-contract --chain-id 42220 --num-of-optimizations 1000000 --watch --constructor-args $(cast abi-encode \
+"constructor(string)" "0.2.0" ) --compiler-version v0.8.19 0x8126d02F4EcDE43eca4543a0D90B755C3E225F09 \
+src/AgreementEligibility.sol:AgreementEligibility --etherscan-api-key $CELOSCAN_KEY
 */
