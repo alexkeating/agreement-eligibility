@@ -10,14 +10,18 @@ import {
   AgreementEligibility_NotArbitrator,
   AgreementEligibility_HatNotMutable
 } from "../src/AgreementEligibility.sol";
+import {AgreementEligibilityFactory} from "src/AgreementEligibilityFactory.sol";
 import { Deploy } from "../script/AgreementEligibility.s.sol";
-import {
-  IHats,
-  HatsModuleFactory,
-  deployModuleFactory,
-  deployModuleInstance
-} from "lib/hats-module/src/utils/DeployFunctions.sol";
+// import {
+//   IHats,
+//   HatsModuleFactory,
+//   deployModuleFactory,
+//   deployModuleInstance
+// } from "lib/hats-module/src/utils/DeployFunctions.sol";
 import { MultiClaimsHatter } from "multi-claims-hatter/MultiClaimsHatter.sol";
+import { MultiClaimsHatterFactory } from "multi-claims-hatter/MultiClaimsHatterFactory.sol";
+import {IHats} from "hats-protocol/Interfaces/IHats.sol";
+import {Hats} from "hats-protocol/Hats.sol";
 
 contract AgreementEligibilityTest is Deploy, Test {
   // variables inhereted from Deploy script
@@ -26,7 +30,10 @@ contract AgreementEligibilityTest is Deploy, Test {
 
   uint256 public fork;
   uint256 public BLOCK_NUMBER = 18_265_713;
-  IHats public constant HATS = IHats(0x3bc1A0Ad72417f2d411118085256fC53CBdDd137); // v1.hatsprotocol.eth
+  string internal constant x = "Hats Protocol v1";
+  string internal constant y = "";
+  IHats public HATS = new Hats{salt: bytes32(abi.encode(0x4a75))}(x, y); // v1.hatsprotocol.eth
+  uint256 saltNonce = 1;
 
   string public FACTORY_VERSION = "factory test version";
   string public MODULE_VERSION = "module test version";
@@ -54,7 +61,7 @@ contract WithInstanceTest is AgreementEligibilityTest {
     ClaimableFor
   }
 
-  HatsModuleFactory public factory;
+  // HatsModuleFactory public factory;
   AgreementEligibility public instance;
   MultiClaimsHatter public claimsHatter;
 
@@ -78,6 +85,13 @@ contract WithInstanceTest is AgreementEligibilityTest {
   uint256 public gracePeriod;
   uint256 public currentAgreementId;
 
+  //  function deployInstance(bytes memory initData) public returns (MultiClaimsHatter) {
+  //  MultiClaimsHatterFactory factory = new MultiClaimsHatterFactory();
+  //  // deploy the instance
+  //  vm.prank(dao);
+  //  return MultiClaimsHatter(factory.deployMultiClaimsHatter(0, address(HATS), initData, saltNonce));
+  //}
+
   function deployAgreementEligibilityInstance(
     uint256 _claimableHat,
     uint256 _ownerHat,
@@ -89,8 +103,9 @@ contract WithInstanceTest is AgreementEligibilityTest {
     // encoded the initData as unpacked bytes
     initData = abi.encode(_ownerHat, _arbitratorHat, _agreement);
     // deploy the instance
+	AgreementEligibilityFactory factory = new AgreementEligibilityFactory();
     return AgreementEligibility(
-      deployModuleInstance(factory, address(implementation), _claimableHat, otherImmutableArgs, initData)
+      factory.deployAgreementEligibility(_claimableHat, address(HATS), initData, saltNonce)
     );
   }
 
@@ -101,9 +116,10 @@ contract WithInstanceTest is AgreementEligibilityTest {
   ) public returns (MultiClaimsHatter) {
     // encoded the initData as unpacked bytes
     initData = abi.encode(_claimableHats, _claimTypes);
+    MultiClaimsHatterFactory factory = new MultiClaimsHatterFactory();
     // deploy the instance
     return MultiClaimsHatter(
-      deployModuleInstance(factory, address(0xB985eA1be961f7c4A4C45504444C02c88c4fdEF9), _hatId, "", initData)
+      factory.deployMultiClaimsHatter(_hatId, address(HATS), initData, saltNonce)
     );
   }
 
@@ -112,7 +128,7 @@ contract WithInstanceTest is AgreementEligibilityTest {
     gracePeriod = 7 days;
 
     // deploy the hats module factory
-    factory = deployModuleFactory(HATS, SALT, FACTORY_VERSION);
+    //factory = deployModuleFactory(HATS, SALT, FACTORY_VERSION);
 
     // set up hats
     tophat = HATS.mintTopHat(dao, "tophat", "dao.eth/tophat");
