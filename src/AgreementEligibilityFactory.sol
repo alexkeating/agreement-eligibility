@@ -5,26 +5,24 @@ import { AgreementEligibility } from "src/AgreementEligibility.sol";
 
 contract AgreementEligibilityFactory {
   // should the version be higher here
-  string public constant VERSION = "0.6.0";
+  string public constant VERSION = "0.6.0-zksync";
 
-  // event AgreementEligibilityFactory_ModuleDeployed(
-  //   address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData, uint256 saltNonce
-  // );
+  event ModuleDeployed(
+    address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData, uint256 saltNonce
+  );
 
   function deployAgreementEligibility(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
     external
     returns (address)
   {
     bytes memory args = abi.encodePacked(_hatId, _hat, _initData);
+    // TODO: Test situation where address exists, verify this is using create2
     bytes32 salt = _calculateSalt(args, _saltNonce);
-    // If exists throw error
-    // emit event
-    // TODO: Add method to send create2 address
     AgreementEligibility instance = new AgreementEligibility{ salt: salt }(VERSION, _hat, _hatId);
     instance.setUp(_initData);
-    // emit HatsModuleFactory_ModuleDeployed(
-    //   address(instance), address(instance), _hatId, abi.encodePacked(_hat, _initData), _initData, _saltNonce
-    // );
+    emit ModuleDeployed(
+      address(instance), address(instance), _hatId, abi.encodePacked(_hat, _initData), _initData, _saltNonce
+    );
     return address(instance);
   }
 

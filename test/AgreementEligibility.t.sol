@@ -12,12 +12,6 @@ import {
 } from "../src/AgreementEligibility.sol";
 import {AgreementEligibilityFactory} from "src/AgreementEligibilityFactory.sol";
 import { Deploy } from "../script/AgreementEligibility.s.sol";
-// import {
-//   IHats,
-//   HatsModuleFactory,
-//   deployModuleFactory,
-//   deployModuleInstance
-// } from "lib/hats-module/src/utils/DeployFunctions.sol";
 import { MultiClaimsHatter } from "multi-claims-hatter/MultiClaimsHatter.sol";
 import { MultiClaimsHatterFactory } from "multi-claims-hatter/MultiClaimsHatterFactory.sol";
 import {IHats} from "hats-protocol/Interfaces/IHats.sol";
@@ -36,7 +30,7 @@ contract AgreementEligibilityTest is Deploy, Test {
   uint256 saltNonce = 1;
 
   string public FACTORY_VERSION = "factory test version";
-  string public MODULE_VERSION = "0.6.0";
+  string public MODULE_VERSION = "0.6.0-zksync";
 
   event AgreementEligibility_HatClaimedWithAgreement(address claimer, uint256 hatId, string agreement);
   event AgreementEligibility_AgreementSigned(address signer, string agreement);
@@ -44,14 +38,7 @@ contract AgreementEligibilityTest is Deploy, Test {
   event AgreementEligibility_OwnerHatSet(uint256 newOwnerHat);
   event AgreementEligibility_ArbitratorHatSet(uint256 newArbitratorHat);
 
-  function setUp() public virtual {
-    // create and activate a fork, at BLOCK_NUMBER
-    //fork = vm.createSelectFork(vm.rpcUrl("mainnet"), BLOCK_NUMBER);
-
-    // deploy via the script
-    //Deploy.prepare(false, MODULE_VERSION); // set first param to true to log deployment addresses
-    //Deploy.run();
-  }
+  function setUp() public virtual {}
 }
 
 contract WithInstanceTest is AgreementEligibilityTest {
@@ -61,7 +48,6 @@ contract WithInstanceTest is AgreementEligibilityTest {
     ClaimableFor
   }
 
-  // HatsModuleFactory public factory;
   AgreementEligibility public instance;
   MultiClaimsHatter public claimsHatter;
 
@@ -84,13 +70,6 @@ contract WithInstanceTest is AgreementEligibilityTest {
   string public agreement;
   uint256 public gracePeriod;
   uint256 public currentAgreementId;
-
-  //  function deployInstance(bytes memory initData) public returns (MultiClaimsHatter) {
-  //  MultiClaimsHatterFactory factory = new MultiClaimsHatterFactory();
-  //  // deploy the instance
-  //  vm.prank(dao);
-  //  return MultiClaimsHatter(factory.deployMultiClaimsHatter(0, address(HATS), initData, saltNonce));
-  //}
 
   function deployAgreementEligibilityInstance(
     uint256 _claimableHat,
@@ -126,9 +105,6 @@ contract WithInstanceTest is AgreementEligibilityTest {
   function setUp() public virtual override {
     super.setUp();
     gracePeriod = 7 days;
-
-    // deploy the hats module factory
-    //factory = deployModuleFactory(HATS, SALT, FACTORY_VERSION);
 
     // set up hats
     tophat = HATS.mintTopHat(dao, "tophat", "dao.eth/tophat");
