@@ -105,6 +105,7 @@ contract AgreementEligibility is HatsEligibilityModule {
 
   /// @inheritdoc HatsModule
   function _setUp(bytes calldata _initData) internal override {
+    if (_initData.length == 0) return; // no init data, so we are done
     // decode init data
     (uint256 _ownerHat, uint256 _arbitratorHat, string memory agreement) =
       abi.decode(_initData, (uint256, uint256, string));
