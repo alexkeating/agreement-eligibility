@@ -2,10 +2,13 @@
 pragma solidity ^0.8.19;
 
 import { AgreementEligibility } from "src/AgreementEligibility.sol";
+import { L2ContractHelper } from "./lib/L2ContractHelper.sol";
 
 contract AgreementEligibilityFactory {
   // should the version be higher here
   string public constant VERSION = "0.6.0-zksync";
+  /// @dev Bytecode hash can be found in zkout/AgreementEligibility.sol/AgreementEligibility.json under the hash key.
+  bytes32 constant BYTECODE_HASH = 0x01000335c26aeb826dba8811279c2f834a3856a35e73dcd86bbec6ff7cc1075f;
 
   event ModuleDeployed(
     address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData, uint256 saltNonce
@@ -15,9 +18,9 @@ contract AgreementEligibilityFactory {
     external
     returns (address)
   {
-    bytes memory args = abi.encodePacked(_hatId, _hat, _initData);
-    // TODO: Test situation where address exists, verify this is using create2
-    bytes32 salt = _calculateSalt(args, _saltNonce);
+    bytes memory saltArgs = abi.encodePacked(VERSION, _hatId, _hat, _initData);
+    bytes32 salt = _calculateSalt(saltArgs, _saltNonce);
+    // TODO: Test situate where contract exitsts
     AgreementEligibility instance = new AgreementEligibility{ salt: salt }(VERSION, _hat, _hatId);
     instance.setUp(_initData);
     emit ModuleDeployed(
@@ -30,15 +33,15 @@ contract AgreementEligibilityFactory {
     return keccak256(abi.encodePacked(_args, block.chainid, _saltNonce));
   }
 
-  function _getAddress(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
-    internal
+  function getAddress(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
+    external
+    view
     returns (address addr)
   {
-    bytes memory args = abi.encodePacked(_hatId, _hat, _initData);
-    bytes32 salt = _calculateSalt(args, _saltNonce);
-    bytes memory bytecode = type(AgreementEligibility).creationCode;
-    assembly {
-      addr := create2(0, add(bytecode, 32), mload(bytecode), salt)
-    }
+    bytes memory saltArgs = abi.encodePacked(VERSION, _hatId, _hat, _initData);
+    bytes32 salt = _calculateSalt(saltArgs, _saltNonce);
+    addr = L2ContractHelper.computeCreate2Address(
+      address(this), salt, BYTECODE_HASH, keccak256(abi.encode(VERSION, _hat, _hatId))
+    );
   }
 }
