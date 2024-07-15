@@ -5,7 +5,6 @@ import { AgreementEligibility } from "src/AgreementEligibility.sol";
 import { L2ContractHelper } from "./lib/L2ContractHelper.sol";
 
 contract AgreementEligibilityFactory {
-  // should the version be higher here
   string public constant VERSION = "0.6.0-zksync";
   /// @dev Bytecode hash can be found in zkout/AgreementEligibility.sol/AgreementEligibility.json under the hash key.
   bytes32 constant BYTECODE_HASH = 0x01000335c26aeb826dba8811279c2f834a3856a35e73dcd86bbec6ff7cc1075f;
@@ -20,7 +19,6 @@ contract AgreementEligibilityFactory {
   {
     bytes memory saltArgs = abi.encodePacked(VERSION, _hatId, _hat, _initData);
     bytes32 salt = _calculateSalt(saltArgs, _saltNonce);
-    // TODO: Test situate where contract exitsts
     AgreementEligibility instance = new AgreementEligibility{ salt: salt }(VERSION, _hat, _hatId);
     instance.setUp(_initData);
     emit ModuleDeployed(

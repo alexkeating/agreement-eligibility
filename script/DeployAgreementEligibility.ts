@@ -11,10 +11,8 @@ const AgreementEligibilityFactory = require("../artifacts-zk/src/AgreementEligib
 const contractName = "AgreementEligibility";
 const HATS_ID = 1;
 const HATS = "0x32Ccb7600c10B4F7e678C7cbde199d98453D0e7e";
-const SALT_NONCE = 1;
-const FACTORY_ADDRESS = "0xd8DCBdacCA46D87502f108283C46D1748954ef51"
-// What does this need to be?
-const INIT_DATA = "0x000000010000000000000000000000000000000000000000000000000000000000000001000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000001b74686973206973207468652066697273742061677265656d656e740000000000"
+const SALT_NONCE = 2;
+const FACTORY_ADDRESS = "0x0ab76D0635E50A644433B31f1bb8b0EC5FB19fa4"
 
 async function main() {
   dotEnvConfig();
@@ -30,9 +28,9 @@ async function main() {
   const deployer = new Deployer(hre, zkWallet);
   const agreementEligibility = await new Contract(FACTORY_ADDRESS, AgreementEligibilityFactory.abi, deployer.zkWallet);
 
-  const tx = await agreementEligibility.deployAgreementEligibility(HATS_ID, HATS, INIT_DATA, SALT_NONCE);
+  const tx = await agreementEligibility.deployAgreementEligibility(HATS_ID, HATS, "0x", SALT_NONCE);
   const tr = await tx.wait();
-	console.log(tr)
+	console.log("Agreement eligibility module deployed at " + tr.contractAddress)
 }
 
 main().catch((error) => {
