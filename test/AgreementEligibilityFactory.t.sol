@@ -13,14 +13,14 @@ contract TestMultiClaimsHatterFactory is Test {
   }
 
   function testFuzz_deployAgreementEligibilty(uint256 _hatId, address _hat, uint256 _saltNonce) public {
-    address instance = factory.deployAgreementEligibility(_hatId, _hat, "", _saltNonce);
+    address instance = factory.deployModule(_hatId, _hat, "", _saltNonce);
     address expectedAddress = factory.getAddress(_hatId, _hat, "", _saltNonce);
     assertEq(instance, expectedAddress);
   }
 
   function testFuzz_deployAgreementEligibiltyTwice(uint256 _hatId, address _hat, uint256 _saltNonce) public {
-    factory.deployAgreementEligibility(_hatId, _hat, "", _saltNonce);
+    factory.deployModule(_hatId, _hat, "", _saltNonce);
     vm.expectRevert(bytes("Code hash is non-zero"));
-    factory.deployAgreementEligibility(_hatId, _hat, "", _saltNonce);
+    factory.deployModule(_hatId, _hat, "", _saltNonce);
   }
 }

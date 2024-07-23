@@ -10,12 +10,12 @@ import {
   AgreementEligibility_NotArbitrator,
   AgreementEligibility_HatNotMutable
 } from "../src/AgreementEligibility.sol";
-import {AgreementEligibilityFactory} from "src/AgreementEligibilityFactory.sol";
+import { AgreementEligibilityFactory } from "src/AgreementEligibilityFactory.sol";
 import { Deploy } from "../script/AgreementEligibility.s.sol";
 import { MultiClaimsHatter } from "multi-claims-hatter/MultiClaimsHatter.sol";
 import { MultiClaimsHatterFactory } from "multi-claims-hatter/MultiClaimsHatterFactory.sol";
-import {IHats} from "hats-protocol/Interfaces/IHats.sol";
-import {Hats} from "hats-protocol/Hats.sol";
+import { IHats } from "hats-protocol/Interfaces/IHats.sol";
+import { Hats } from "hats-protocol/Hats.sol";
 
 contract AgreementEligibilityTest is Deploy, Test {
   // variables inhereted from Deploy script
@@ -26,7 +26,7 @@ contract AgreementEligibilityTest is Deploy, Test {
   uint256 public BLOCK_NUMBER = 18_265_713;
   string internal constant x = "Hats Protocol v1";
   string internal constant y = "";
-  IHats public HATS = new Hats{salt: bytes32(abi.encode(0x4a75))}(x, y); // v1.hatsprotocol.eth
+  IHats public HATS = new Hats{ salt: bytes32(abi.encode(0x4a75)) }(x, y); // v1.hatsprotocol.eth
   uint256 saltNonce = 1;
 
   string public FACTORY_VERSION = "factory test version";
@@ -38,7 +38,7 @@ contract AgreementEligibilityTest is Deploy, Test {
   event AgreementEligibility_OwnerHatSet(uint256 newOwnerHat);
   event AgreementEligibility_ArbitratorHatSet(uint256 newArbitratorHat);
 
-  function setUp() public virtual {}
+  function setUp() public virtual { }
 }
 
 contract WithInstanceTest is AgreementEligibilityTest {
@@ -82,10 +82,8 @@ contract WithInstanceTest is AgreementEligibilityTest {
     // encoded the initData as unpacked bytes
     initData = abi.encode(_ownerHat, _arbitratorHat, _agreement);
     // deploy the instance
-	AgreementEligibilityFactory factory = new AgreementEligibilityFactory();
-    return AgreementEligibility(
-      factory.deployAgreementEligibility(_claimableHat, address(HATS), initData, saltNonce)
-    );
+    AgreementEligibilityFactory factory = new AgreementEligibilityFactory();
+    return AgreementEligibility(factory.deployModule(_claimableHat, address(HATS), initData, saltNonce));
   }
 
   function deployMultiClaimsHatterInstance(
@@ -97,9 +95,7 @@ contract WithInstanceTest is AgreementEligibilityTest {
     initData = abi.encode(_claimableHats, _claimTypes);
     MultiClaimsHatterFactory factory = new MultiClaimsHatterFactory();
     // deploy the instance
-    return MultiClaimsHatter(
-      factory.deployMultiClaimsHatter(_hatId, address(HATS), initData, saltNonce)
-    );
+    return MultiClaimsHatter(factory.deployModule(_hatId, address(HATS), initData, saltNonce));
   }
 
   function setUp() public virtual override {
