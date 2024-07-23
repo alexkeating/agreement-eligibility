@@ -11,8 +11,8 @@ const AgreementEligibilityFactory = require("../artifacts-zk/src/AgreementEligib
 const contractName = "AgreementEligibility";
 const HATS_ID = 1;
 const HATS = "0x32Ccb7600c10B4F7e678C7cbde199d98453D0e7e";
-const SALT_NONCE = 2;
-const FACTORY_ADDRESS = "0x0ab76D0635E50A644433B31f1bb8b0EC5FB19fa4";
+const SALT_NONCE = 1;
+const FACTORY_ADDRESS = "0xc5c92a89d7664Ef02d6d10FC3Fe313CC4A781553";
 
 async function main() {
   dotEnvConfig();
@@ -26,13 +26,13 @@ async function main() {
 
   const zkWallet = new Wallet(deployerPrivateKey);
   const deployer = new Deployer(hre, zkWallet);
-  const agreementEligibility = await new Contract(
+  const agreementEligibility = new Contract(
     FACTORY_ADDRESS,
     AgreementEligibilityFactory.abi,
     deployer.zkWallet
   );
 
-  const tx = await agreementEligibility.deployAgreementEligibility(
+  const tx = await agreementEligibility.deployModule(
     HATS_ID,
     HATS,
     "0x",
