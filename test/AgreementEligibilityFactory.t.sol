@@ -5,7 +5,7 @@ import { Test, console2, Vm } from "forge-std/Test.sol";
 import { AgreementEligibility } from "../src/AgreementEligibility.sol";
 import { AgreementEligibilityFactory } from "../src/AgreementEligibilityFactory.sol";
 
-contract TestMultiClaimsHatterFactory is Test {
+contract TestAgreementEligibilityFactory is Test {
   AgreementEligibilityFactory factory;
 
   function setUp() public {
