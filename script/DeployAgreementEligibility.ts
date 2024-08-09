@@ -12,7 +12,7 @@ const contractName = "AgreementEligibility";
 const HATS_ID = 1;
 const HATS = "0x32Ccb7600c10B4F7e678C7cbde199d98453D0e7e";
 const SALT_NONCE = 1;
-const FACTORY_ADDRESS = "0xc5c92a89d7664Ef02d6d10FC3Fe313CC4A781553";
+const FACTORY_ADDRESS = "0x18eE7bC80dD334D782C84E106216EB30f86D1CA9";
 
 async function main() {
   dotEnvConfig();
