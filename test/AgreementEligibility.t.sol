@@ -364,7 +364,8 @@ contract Forgive is WithInstanceTest {
     instance.forgive(claimer1);
 
     assertTrue(instance.wearerStanding(claimer1));
-    assertFalse(HATS.isWearerOfHat(claimer1, claimableHat));
+    /// @dev This should be true until we bring back the setHatWearerStatus call in `revoke()`
+    assertTrue(HATS.isWearerOfHat(claimer1, claimableHat));
   }
 
   function test_revert_notArbitrator() public {

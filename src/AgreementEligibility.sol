@@ -219,14 +219,20 @@ contract AgreementEligibility is HatsEligibilityModule {
     // set bad standing in this contract
     _badStandings[_wearer] = true;
 
-    // revoke _wearer's hat and set their standing to false in Hats.sol
-    HATS().setHatWearerStatus(hatId(), _wearer, false, false);
-
     /**
-     * @dev Hats.sol will emit the following events:
-     *   1. ERC1155.TransferSingle (burn)
-     *   2. Hats.WearerStandingChanged
+     * @dev This logic breaks compatibility with module chains, since the setHatWearerStatus call will revert if this
+     * contract is not directly set as the hat's eligibility module.
+     * TODO post-MVP, bring this back conditional on this contract being directly set as the hat's eligibility
+     * module
      */
+    // revoke _wearer's hat and set their standing to false in Hats.sol
+    // HATS().setHatWearerStatus(hatId(), _wearer, false, false);
+
+    // /**
+    //  * @dev Hats.sol will emit the following events:
+    //  *   1. ERC1155.TransferSingle (burn)
+    //  *   2. Hats.WearerStandingChanged
+    //  */
   }
 
   /**
@@ -237,7 +243,8 @@ contract AgreementEligibility is HatsEligibilityModule {
   function forgive(address _wearer) public onlyArbitrator {
     _badStandings[_wearer] = false;
 
-    HATS().setHatWearerStatus(hatId(), _wearer, true, true);
+    /// @dev Removing this for the same reason as in `revoke()` above
+    // HATS().setHatWearerStatus(hatId(), _wearer, true, true);
 
     /// @dev Hats.sol will emit a Hats.WearerStandingChanged event
   }
